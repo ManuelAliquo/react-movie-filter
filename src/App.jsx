@@ -8,11 +8,22 @@ movies.forEach((movie) => {
 });
 
 export default function App() {
+  const [filterTitle, setFilterTitle] = useState("");
   const [filterGenre, setFilterGenre] = useState("");
   const [filteredMovies, setFilteredMovies] = useState(movies);
 
+  // handle submit
+  const handleSubmit = (e) => e.preventDefault();
+  // input change
+  const handleInput = (e) => setFilterTitle(e.target.value);
   // select change
   const handleSelect = (e) => setFilterGenre(e.target.value);
+
+  useEffect(() => {
+    setFilteredMovies(
+      movies.filter((movie) => movie.title.toLowerCase().includes(filterTitle.toLowerCase())),
+    );
+  }, [filterTitle]);
 
   // vedo se l'oggetto movie contiene l'elemento genre selezionato nella select
   useEffect(() => {
@@ -24,7 +35,7 @@ export default function App() {
       <h1 className="text-center mt-4">Scegli il tuo Film</h1>
       <div className="container d-flex flex-column align-items-center">
         <div className="w-75 test-start mt-5">
-          <h4>Films</h4>
+          <h4 className="ms-2">Films</h4>
         </div>
         <ul className="d-flex list-group mb-5 w-75">
           {filteredMovies.map((movie, index) => (
@@ -34,8 +45,24 @@ export default function App() {
           ))}
         </ul>
 
-        <form className="w-75">
-          <label htmlFor="genre">Genere</label>
+        <form onSubmit={handleSubmit} className="w-75">
+          <label className="form-label mb-1" htmlFor="title">
+            Cerca il Titolo del film
+          </label>
+          <div className="input-group mb-2">
+            <input
+              value={filterTitle}
+              onChange={handleInput}
+              type="text"
+              className="form-control"
+              id="title"
+            />
+            <button className="btn btn-outline-success">Cerca</button>
+          </div>
+
+          <label className="mb-1 " htmlFor="genre">
+            Genere
+          </label>
           <select onChange={handleSelect} className="form-select" id="genre">
             <option value="">Seleziona:</option>
             {genres.map((genre, index) => (
