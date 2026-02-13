@@ -1,4 +1,4 @@
-const movies = [
+const initialMovies = [
   { title: "Inception", genre: "Fantascienza" },
   { title: "Il Padrino", genre: "Thriller" },
   { title: "Titanic", genre: "Romantico" },
@@ -7,4 +7,4 @@ const movies = [
   { title: "Pulp Fiction", genre: "Thriller" },
 ];
 
-export default movies;
+export default initialMovies;
