@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import initialMovies from "./assets/data/movies.js";
+import MovieCard from "./components/MovieCard.jsx";
 
 export default function App() {
-  const [filterTitle, setFilterTitle] = useState("");
-  const [filterGenre, setFilterGenre] = useState("");
-
-  const [newTitle, setNewTitle] = useState("");
-  const [newGenre, setNewGenre] = useState("");
-
   const [movies, setMovies] = useState(initialMovies);
   const [filteredMovies, setFilteredMovies] = useState(initialMovies);
+
+  // stati per i filtri
+  const [filterTitle, setFilterTitle] = useState("");
+  const [filterGenre, setFilterGenre] = useState("");
+  // stati per l'aggiunta
+  const [newTitle, setNewTitle] = useState("");
+  const [newGenre, setNewGenre] = useState("");
 
   // handle submit
   const handleSubmit = (e) => e.preventDefault();
@@ -29,9 +31,25 @@ export default function App() {
     setNewGenre("");
   };
 
+  // filtro di ricerca
   useEffect(() => {
-    setFilteredMovies(movies);
-  }, [movies]);
+    let filteredResults = movies;
+
+    // filtro per titolo se filterTitle non è vuoto
+    if (filterTitle) {
+      filteredResults = filteredResults.filter((movie) =>
+        movie.title.toLowerCase().includes(filterTitle.toLowerCase()),
+      );
+    }
+
+    // filtro per genere se filterGenre non è vuoto
+    if (filterGenre) {
+      filteredResults = filteredResults.filter((movie) => movie.genre === filterGenre);
+    }
+
+    // aggiornamento stato
+    setFilteredMovies(filteredResults);
+  }, [movies, filterTitle, filterGenre]);
 
   // salvo tutti i generi presenti nell'array movies
   const genres = [];
@@ -46,18 +64,6 @@ export default function App() {
   // select handle
   const handleSelect = (e) => setFilterGenre(e.target.value);
 
-  // vedo se l'oggetto movie contiene l'elemento title cercato nell'input
-  useEffect(() => {
-    setFilteredMovies(
-      movies.filter((movie) => movie.title.toLowerCase().includes(filterTitle.toLowerCase())),
-    );
-  }, [filterTitle]);
-
-  // vedo se l'oggetto movie contiene l'elemento genre selezionato nella select
-  useEffect(() => {
-    setFilteredMovies(movies.filter((movie) => movie.genre.includes(filterGenre)));
-  }, [filterGenre]);
-
   return (
     <>
       <header className="text-center pt-4 pb-3 bg-light">
@@ -69,13 +75,11 @@ export default function App() {
           <div className="sect-heading-container">
             <h2 className="h3">Films</h2>
           </div>
-          <ul className="d-flex list-group w-75">
+          <div className="row row-cols-1 row-cols-lg-2 g-2">
             {filteredMovies.map((movie, index) => (
-              <li className="list-group-item" key={index}>
-                {movie.title}
-              </li>
+              <MovieCard key={index} movie={movie} />
             ))}
-          </ul>
+          </div>
         </section>
 
         {/* Movie search */}
@@ -101,7 +105,7 @@ export default function App() {
               Genere
             </label>
             <select onChange={handleSelect} className="form-select" id="genre-select">
-              <option value="">Seleziona:</option>
+              <option value="">Tutti i Generi</option>
               {genres.map((genre, index) => (
                 <option key={index} value={genre}>
                   {genre}
@@ -123,9 +127,11 @@ export default function App() {
             <input
               value={newTitle}
               onChange={handleTitleAdd}
+              placeholder="Es. Il Signore Degli Anelli"
               className="form-control mb-2"
               type="text"
               id="title-add"
+              required
             />
             <label className="form-label mb-1" htmlFor="genre-add">
               Genere del Film:
@@ -133,9 +139,11 @@ export default function App() {
             <input
               value={newGenre}
               onChange={handleGenreAdd}
+              placeholder="Es. Fantasy"
               className="form-control"
               type="text"
               id="genre-add"
+              required
             />
             <div className="text-end">
               <button className="btn btn-success me-2 mt-3">Aggiungi</button>
